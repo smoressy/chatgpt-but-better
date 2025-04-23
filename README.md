@@ -1,1 +1,3 @@
 ChatGPT... but better
+THIS HAS MANY UNFIXED UI BUGS AND UNCHECKED FEATURES THOROUGLY! MORE UPDATES WILL BE POSTED SOON AT https://ai.smoresxo.shop/
+CONTACT: smorenitez2@proton.me
