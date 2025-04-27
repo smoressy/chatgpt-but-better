@@ -7,19 +7,33 @@ const multer = require('multer');
 const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require("@google/generative-ai");
 require('dotenv').config();
 const PUBLIC_MODE = false;
-// true = no convo history
+// true = no convo history (good for public server)
 // false = convo history will be saved to json
 const SAVE_INTERVAL_MS = 5000;
 const HISTORY_FILE = path.join(__dirname, "convo_history.json");
 const DEFAULT_PORT = PUBLIC_MODE ? 3000 : 8005;
 const HOST = 'localhost';
 const globalRequestTimestamps = [];
+const { spawn, spawnSync } = require('child_process');
+function locatePython() {
+  const candidates = process.platform === 'win32'
+    ? [ ['py', ['-3']], ['python', []], ['python3', []] ]
+    : [ ['python3', []], ['python', []] ];
+  for (const [cmd, baseArgs] of candidates) {
+    try {
+      const result = spawnSync(cmd, [...baseArgs, '--version'], { stdio: 'ignore' });
+      if (result.status === 0) {
+        return { cmd, baseArgs };
+      }
+    } catch (e) {}
+  }
+  throw new Error('No suitable Python found. Ensure one of: python3, python, or (on Windows) py -3 is on your PATH.');
+}
+const { cmd: PY_CMD, baseArgs: PY_BASE_ARGS } = locatePython();
 process.on('unhandledRejection', (reason, promise) => {
-
+    
 });
-
 process.on('uncaughtException', (error) => {
-
 });
 const GEMINI_API_KEYS = [];
 for (let i = 1; i <= 57; i++) {
@@ -27,8 +41,8 @@ for (let i = 1; i <= 57; i++) {
     if (key) GEMINI_API_KEYS.push(key);
 }
 const BRAVE_API_KEYS = [
-// ENTER BRAVE API KEY HERE FOR SEARCH.....
-  ];
+// enter here (its free)
+];
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 const memCache = {
@@ -54,7 +68,7 @@ function checkGlobalRateLimit() {
     const windowStart = now - 60000;
     const recentTimestamps = globalRequestTimestamps.filter(ts => ts >= windowStart);
 
-    if (recentTimestamps.length >= 120) {
+    if (recentTimestamps.length >= 256) {
         globalRequestTimestamps.length = 0;
         globalRequestTimestamps.push(...recentTimestamps);
         return false;
@@ -149,7 +163,7 @@ async function initializeLastValidKey() {
     for (let key of GEMINI_API_KEYS) {
         try {
             const genAI = new GoogleGenerativeAI(key);
-            const model = genAI.getGenerativeModel({ model: "models/gemini-2.0-flash-exp-image-generation" });
+            const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
             await model.generateContent("hi");
             memCache.lastValidGeminiKey = key;
             return;
@@ -237,157 +251,192 @@ app.get('/nopermission.html', (req, res) => {
     res.sendFile(__dirname + '/nopermission.html');
   });
 // NEW CODE SNIPPET
+// Define allowed models server-side for validation
+const ALLOWED_GEMINI_MODELS = [
+    'models/gemini-2.0-flash-exp-image-generation',
+    'models/gemini-2.5-pro-exp-03-25',
+    'models/gemini-2.5-flash-preview',
+    'models/gemini-2.0-flash-001',
+    'models/gemini-2.0-flash-lite-001',
+    'models/gemini-1.5-flash-8b',
+    'models/gemini-1.5-pro-002',
+    'models/gemini-1.5-flash-002'
+];
+const DEFAULT_GEMINI_MODEL = "models/gemini-2.5-flash-preview-04-17"; // Keep your existing default
 async function streamGeminiResponse(promptArray, res, aiTimestamp, options = {}) {
-    const { captureFullResponse = false } = options;
+    // Destructure options and get the requested modelName
+    const { captureFullResponse = false, requestedModelName = null } = options;
 
     // --- BEGIN GLOBAL RATE LIMIT CHECK ---
     if (PUBLIC_MODE) {
         const allowed = checkGlobalRateLimit();
         if (!allowed) {
-            // Rate limit exceeded
             if (!res.writableEnded) {
-                // Send an error event specifically for rate limiting
                 res.write(`event: error\ndata: ${JSON.stringify({ message: "Global API request limit reached (10 requests/60 seconds). Please wait a moment and try again.", code: "RATE_LIMIT_EXCEEDED", timestamp: aiTimestamp })}\n\n`);
-                // End the response immediately as no AI call will be made
                 res.end();
             }
-            // Throw a specific error to stop further processing in this function call
-            // This will be caught by the try/catch blocks in the route handlers
             throw new Error("GlobalRateLimitExceeded");
         }
-        // If allowed, the timestamp was added in checkGlobalRateLimit()
     }
     // --- END GLOBAL RATE LIMIT CHECK ---
 
+    // NEW: If the user has selected the "gpt-4o" model, use our custom GPT API by spawning gpt.py.
+    if (requestedModelName === 'gpt-4o (slow)') {
+        return new Promise((resolve, reject) => {
+            const script = path.join(__dirname, 'gpt.py');
+            const args = [...PY_BASE_ARGS, script, promptArray.join("\n")];
+            const py = spawn(PY_CMD, args, { windowsHide: true });
+            let fullAiResponseText = "";
+
+            py.stdout.on('data', (chunk) => {
+                // Explicitly decode the chunk as UTF-8
+                const chunkText = chunk.toString('utf8');
+                fullAiResponseText += chunkText;
+                if (!res.writableEnded) {
+                    // Ensure the JSON stringification handles Unicode correctly (which it should by default)
+                    // and send it over SSE
+                    res.write(`data: ${JSON.stringify({ type: 'text', content: chunkText, timestamp: aiTimestamp })}\n\n`);
+                }
+            });
+            py.stderr.on('data', (chunk) => {
+                const errMsg = chunk.toString().trim();
+                if (!res.writableEnded) {
+                    res.write(`event: error\ndata: ${JSON.stringify({ message: errMsg, timestamp: aiTimestamp })}\n\n`);
+                }
+                console.error('[python stderr]', errMsg);
+            });
+
+            py.on('close', (code) => {
+                if (code !== 0) {
+                    if (!res.writableEnded) {
+                        res.write(`event: error\ndata: ${JSON.stringify({ message: "gpt.py exited with code " + code, timestamp: aiTimestamp })}\n\n`);
+                        res.end();
+                    }
+                    return reject(new Error("gpt.py exited with code " + code));
+                }
+                resolve({ fullAiResponseText, responseImageData: null });
+            });
+        });
+    }
+
+    // Determine the actual model to use
+    let modelNameToUse = DEFAULT_GEMINI_MODEL; // Start with the default
+    if (requestedModelName && ALLOWED_GEMINI_MODELS.includes(requestedModelName)) {
+        // If a valid model was requested, use it
+        modelNameToUse = `models/${requestedModelName}`; // Prepend "models/" as required by the API
+    } else if (requestedModelName) {
+        // Handle invalid model cases (Optional)
+    }
 
     let fullAiResponseText = "";
     let responseImageData = null;
     let startIndex = memCache.lastValidGeminiKey
         ? GEMINI_API_KEYS.indexOf(memCache.lastValidGeminiKey)
         : 0;
-    // Corrected the potential -1 index issue if the key wasn't found (though initialization should prevent this)
     if (startIndex === -1) {
-         startIndex = 0;
+        startIndex = 0;
     }
     let streamResult = null;
     let success = false;
     let lastError = null;
 
-    // <<< The loop now starts AFTER the rate limit check >>>
     for (let i = 0; i < GEMINI_API_KEYS.length; i++) {
         const keyIndex = (startIndex + i) % GEMINI_API_KEYS.length;
         const key = GEMINI_API_KEYS[keyIndex];
         try {
             const genAI = new GoogleGenerativeAI(key);
+            // Use the determined modelNameToUse here
             const model = genAI.getGenerativeModel({
-                model: "models/gemini-2.0-flash-exp-image-generation"
-                // Note: Removed safetySettings here as they weren't used before,
-                // but you might want to add them back if needed:
-                // safetySettings: safetySettings
+                model: modelNameToUse, // Use the selected or default model
+                safetySettings: safetySettings // Apply safety settings consistently
             });
             streamResult = await model.generateContentStream(promptArray);
-            memCache.lastValidGeminiKey = key; // Update the last known good key
+            memCache.lastValidGeminiKey = key;
             success = true;
-            break; // Exit loop on success
+            break;
         } catch (err) {
-            lastError = err; // Store the error in case all keys fail
-            // Check for specific errors that indicate trying the next key is appropriate
+            lastError = err;
             if (err.message.includes('API key not valid') ||
                 err.message.includes('quota') ||
-                (err.status && (err.status === 401 || err.status === 429))) // Use err.status if available
-            {
-                // Log key failure (optional)
-                continue; // Try next key
+                (err.status && (err.status === 401 || err.status === 429)) ||
+                err.message.includes('404') // Handle model not found for a specific key/region
+            ) {
+                continue;
             } else {
-                // For other unexpected errors, log them and continue (could potentially break)
-
-                continue; // Decide if you want to stop or keep trying other keys
+                continue;
             }
         }
     }
 
-    // If no key worked after the loop, handle the failure
     if (!success) {
-         if (!res.writableEnded) {
-             // Send a generic error message if no key succeeded
-              res.write(`event: error\ndata: ${JSON.stringify({ message: "Failed to connect to AI service after trying all available keys.", error: lastError?.message || "Unknown API key issue", timestamp: aiTimestamp })}\n\n`);
-         }
-         // Throw the error to be caught by the calling route handler's try/catch
-         throw lastError || new Error("No valid API key found or all keys failed.");
-     }
+        if (!res.writableEnded) {
+            res.write(`event: error\ndata: ${JSON.stringify({ message: `Failed to connect to AI service (Model: ${modelNameToUse}) after trying all keys.`, error: lastError?.message || "Unknown API key/model issue", timestamp: aiTimestamp })}\n\n`);
+        }
+        throw lastError || new Error("No valid API key found or all keys failed for the selected model.");
+    }
 
-
-    // --- Start Processing the Stream (only if a key succeeded) ---
+    // --- Start Processing the Stream ---
     try {
         for await (const chunk of streamResult.stream) {
             let chunkText = null;
             let chunkImage = null;
             try {
-                // Check if text() method exists and call it
                 if (typeof chunk.text === 'function') {
                     const text = chunk.text();
-                     if (text) { // Ensure text is not empty
-                         chunkText = text;
-                         if (captureFullResponse) {
-                             fullAiResponseText += chunkText;
-                         }
-                     }
+                    if (text) {
+                        chunkText = text;
+                        if (captureFullResponse) {
+                            fullAiResponseText += chunkText;
+                        }
+                    }
                 }
-            } catch (error) {
-            }
+            } catch (error) { /* Optional: Log text reading error */ }
 
-            // Check for image data in the chunk more robustly
             if (chunk.candidates && chunk.candidates[0]?.content?.parts) {
                 for (const part of chunk.candidates[0].content.parts) {
                     if (part.inlineData && part.inlineData.data && part.inlineData.mimeType) {
                         chunkImage = "data:" + part.inlineData.mimeType + ";base64," + part.inlineData.data;
                         if (captureFullResponse) {
-                            responseImageData = chunkImage; // Store the latest image data if capturing
+                            responseImageData = chunkImage;
                         }
-                        break; // Assuming only one image part is relevant per chunk for now
+                        break;
                     }
                 }
             }
 
-            // Send text chunk if available
             if (chunkText !== null && !res.writableEnded) {
-              // Send the text chunk as before
-              res.write(`data: ${JSON.stringify({ type: 'text', content: chunkText, timestamp: aiTimestamp })}\n\n`);
+                res.write(`data: ${JSON.stringify({ type: 'text', content: chunkText, timestamp: aiTimestamp })}\n\n`);
             }
 
-            // Send image chunk if available
             if (chunkImage !== null && !res.writableEnded) {
                 res.write(`data: ${JSON.stringify({ type: 'image', content: chunkImage, timestamp: aiTimestamp })}\n\n`);
             }
 
-            // Check if response has ended prematurely (e.g., client disconnected)
             if (res.writableEnded) {
-                 break; // Stop processing if client disconnected
+                break;
             }
         }
 
-        // After the loop, if capturing the full response, return it
         if (captureFullResponse) {
             return { fullAiResponseText, responseImageData };
         } else {
-            return null; // Indicate no full response was captured (or needed)
+            return null;
         }
 
     } catch (streamError) {
-        // Handle error during stream processing
         if (!res.writableEnded) {
-             res.write(`event: error\ndata: ${JSON.stringify({ message: "Error processing AI response stream.", details: streamError.message, timestamp: aiTimestamp })}\n\n`);
+            res.write(`event: error\ndata: ${JSON.stringify({ message: "Error processing AI response stream.", details: streamError.message, timestamp: aiTimestamp })}\n\n`);
         }
-        // Re-throw the error to be caught by the outer try/catch in the route handler
         throw streamError;
     }
 }
 app.post("/sigma", upload.single("file"), async (req, res) => {
     const { message, chatId: requestedChatId } = req.body;
     const file = req.file;
+    // Read flags and model from query parameters
     const performWebSearch = req.query.search !== undefined;
     const isReasoningMode = req.query.reasoning !== undefined;
-
+    const requestedModelName = req.query.model; // Get the model name from query
     if (!message && !file) {
         return res.status(400).json({ error: "Request must include a message or a file." });
     }
@@ -430,27 +479,31 @@ app.post("/sigma", upload.single("file"), async (req, res) => {
       if (isReasoningMode) {
           notepad = { thinkingProcess: "" }; // Assign to the outer notepad variable
           const systemInstructionsPrompt = `USER: ${finalPromptContent}
--- System Instructions
-Generate a bullet-point list for your thinking process about answering the user prompt.
-You do not need to include all the bullet points. Just include the ones you believe are appropriate for the prompt.
-Include details such as:
-* (Optional, if image is included): Identify image content and context.
-* Requirements and constraints.
-* Any tasks or goals.
-* Plan.
-* Identify the Core Request.
-* Identify the Context.
-* Identify the User Intent.
-* Brainstorm Key Identifiers.
-* Structure the Answer.
-* Identify the Audience.
-* Identify the Tone.
-* Review and Refine.
-* Identify the Format.
-SYSTEM INSTRUCTION: THIS IS NOT THE PLACE FOR THE FINAL ANSWER. JUST PROVIDE THE THINKING PROCESS FOR THE PRODUCTION OF THE FINAL RESPONSE.
-SYSTEM INSTRUCTION: (IMPORTANT) Do NOT provide a final response to the user prompt in this stage. Just focus on your internal thought process. I repeat: DO NOT GENERATE A FINAL RESPONSE TO THE USER PROMPT.
-            `;
-
+**System Instructions:**
+Start your message with your "Thinking Proccess:"
+Think like Olympiad - Consider all available options - Generate longest chain of thought.
+Generate a concise bullet-point list outlining your reasoning process for addressing the user prompt.  
+Include only the most relevant points for the specific prompt.
+Do **NOT** copy the following format. You must include these but do it in your own words. Do not copy word for word (1:1).
+Consider the following aspects as appropriate:
+* (If applicable) Describe and interpret any images included.
+* Identify the core request and main objective.
+* Clarify the context and user intent.
+* Note any requirements, constraints, or specific instructions.
+* Define the target audience and the expected tone.
+* Identify key concepts, facts, or information needed.
+* Outline your plan for structuring the answer.
+* Brainstorm possible approaches or solutions.
+* Specify the intended answer format (e.g., list, essay, code, summary).
+* Review for completeness and clarity.
+-- Stage 2: Sandbox Mode | Planning the Final Answer --
+Imagine you are drafting the final response. Use bullet points to cover:
+* Any necessary opinions or evaluations.
+* What the AI should say, do, or avoid.
+* Rationale for your approach and choices.
+* The intended tone and style.
+* Any other relevant considerations for crafting the response.
+DO NOT GENERATE A FINAL ANSWER UNDER ANY CIRCUMSTANCES. ONLY THINK ABOUT HOW AN AI COULD PIECE TOGETHER DETAILS TO ARRIVE AT ONE.`;
             res.write(`event: thinking_start\ndata: ${JSON.stringify({ timestamp: aiTimestamp })}\n\n`);
 
             let thinkingInputArray;
@@ -470,16 +523,18 @@ SYSTEM INSTRUCTION: (IMPORTANT) Do NOT provide a final response to the user prom
                 thinkingInputArray, // Use the array that potentially includes the image
                 res,
                 aiTimestamp,
-                { captureFullResponse: true }
+                { captureFullResponse: true, requestedModelName: requestedModelName } // Pass model name
             );
-            if (thinkingResult) {
+                        if (thinkingResult) {
                 notepad.thinkingProcess = thinkingResult.fullAiResponseText;
             } else {
             }
              res.write(`event: thinking_end\ndata: ${JSON.stringify({ timestamp: aiTimestamp })}\n\n`); // Signal end of thinking
             const finalAnswerPrompt = `
-This is your internal chain of thought. Do not reveal or reference it:
+You are an advanced AI model with thinking capability. This is your internal chain of thought. Do not reveal or reference it:
 {CHAIN}
+SYSTEM INSTRUCTION: DO NOT REVEAL OR REFERENCE YOUR CHAIN OF THOUGHT **EVER**!!!!!!!!!!!!!
+Kindly use the information above **strictly for reference use only**. You must **always** generate a full AI answer to the users prompt regardless of what the chain of thought states.
 ---
 This is the original user prompt: ${finalPromptContent}
 ---
@@ -505,9 +560,8 @@ Generate a final reply for the user. Think like an Olympiad answering a complex 
                 finalAnswerInputArray,
                 res,
                 aiTimestamp,
-                { captureFullResponse: true }
+                { captureFullResponse: true, requestedModelName: requestedModelName } // Pass model name
             );
-
             if (finalResult) {
                 finalAiResponseText = finalResult.fullAiResponseText;
                 finalAiImageData = finalResult.responseImageData;
@@ -532,7 +586,7 @@ Generate a final reply for the user. Think like an Olympiad answering a complex 
                 inputArray,
                 res,
                 aiTimestamp,
-                { captureFullResponse: true }
+                { captureFullResponse: true, requestedModelName: requestedModelName } // Pass model name
             );
 
             if (result) {
@@ -566,7 +620,7 @@ app.post("/refresh-message", async (req, res) => {
     }
 
     const { chatId, aiMessageTimestamp } = req.body;
-
+    const requestedModelName = req.query.model; // Get model from query
     if (!chatId || !aiMessageTimestamp) {
         return res.status(400).json({ error: "Missing chatId or aiMessageTimestamp" });
     }
@@ -620,9 +674,8 @@ app.post("/refresh-message", async (req, res) => {
             inputArray,
             res,
             newAiTimestamp,
-            { captureFullResponse: true }
+            { captureFullResponse: true, requestedModelName: requestedModelName } // Pass model name
         );
-
         if (result) {
             regeneratedText = result.fullAiResponseText;
             regeneratedImage = result.responseImageData;
@@ -719,9 +772,9 @@ app.get("/conversations", (req, res) => {
 });
 
 app.post("/research", upload.single("file"), async (req, res) => {
-  const { message, chatId: requestedChatId } = req.body;
-  const file = req.file; // Handle optional file upload
-
+    const { message, chatId: requestedChatId } = req.body;
+    const file = req.file; // Handle optional file upload
+    const requestedModelName = req.query.model; // Get model from query
   if (!message && !file) { // Need at least a message for research query
       return res.status(400).json({ error: "Research request must include a message (query)." });
   }
@@ -802,9 +855,7 @@ Include details such as:
 * Identify the Tone.
 * Review and Refine.
 * Identify the Format.
-
-SYSTEM INSTRUCTION: THIS IS NOT THE PLACE FOR THE FINAL ANSWER. JUST PROVIDE THE THINKING PROCESS.
-SYSTEM INSTRUCTION: (IMPORTANT) Do NOT provide a final response to the user prompt in this stage. Just focus on your internal thought process, integrating the search results. I repeat: DO NOT GENERATE A FINAL RESPONSE TO THE USER PROMPT.
+Do not use search results if you do not find any useful information.
 `;
 
       res.write(`event: thinking_start\ndata: ${JSON.stringify({ timestamp: aiTimestamp })}\n\n`);
@@ -820,12 +871,11 @@ SYSTEM INSTRUCTION: (IMPORTANT) Do NOT provide a final response to the user prom
       }
 
       const thinkingResult = await streamGeminiResponse(
-          thinkingInputArray,
-          res, // Stream directly to response
-          aiTimestamp,
-          { captureFullResponse: true } // Need to capture the full thinking process
-      );
-
+        thinkingInputArray,
+        res, // Stream directly to response
+        aiTimestamp,
+        { captureFullResponse: true, requestedModelName: requestedModelName } // Pass model name
+    );
       if (thinkingResult && thinkingResult.fullAiResponseText) {
           notepad.thinkingProcess = thinkingResult.fullAiResponseText;
       } else {
@@ -868,12 +918,12 @@ Generate a final, comprehensive reply for the user based on their original reque
            finalAnswerInputArray = [finalAnswerPrompt];
        }
 
-      const finalResult = await streamGeminiResponse(
-          finalAnswerInputArray,
-          res, // Stream directly to response
-          aiTimestamp,
-          { captureFullResponse: true } // Capture full response for history
-      );
+       const finalResult = await streamGeminiResponse(
+        finalAnswerInputArray,
+        res, // Stream directly to response
+        aiTimestamp,
+        { captureFullResponse: true, requestedModelName: requestedModelName } // Pass model name
+    );
 
       if (finalResult) {
           finalAiResponseText = finalResult.fullAiResponseText || "";
