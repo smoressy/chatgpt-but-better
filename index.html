@@ -16,7 +16,6 @@
       --bg-main: #0f0f0f;
       --bg-sidebar: #000000;
       --bg-input: #1a1a1a;
-      --bg-input-hover: #1a1a1a;
       --bg-button-secondary: #1a1a1a;
       --bg-button-secondary-hover: #232323;
       --bg-avatar: #ab0090;
@@ -39,8 +38,7 @@
       --bg-main: #ffffff !important;
       --bg-sidebar: #f5f5f5 !important;
       --bg-input: #f0f0f0 !important;
-      --bg-input-hover: #e8e8e8 !important;
-      --bg-button-secondary: #e8e8e8 !important;
+      --bg-button-secondary: #f0f0f0 !important;
       --bg-button-secondary-hover: #dadada !important;
       --bg-avatar: #ab0090 !important;
       --text-primary: #2c2c2c !important;
@@ -54,6 +52,90 @@
       --send-button-active-bg: #666666 !important;
     }
 
+    /* --- Light Mode Code Block Visibility Fix --- */
+    [data-theme="light"] .markdown-content pre {
+      /* Use a slightly darker background than the main page for contrast */
+      background-color: #f0f0f0;
+      border: 1px solid #e0e0e0;
+      /* Match other light theme borders */
+    }
+
+    [data-theme="light"] .markdown-content pre code {
+      /* Ensure the base code text is dark */
+      color: #333333;
+    }
+
+    /* Override specific highlight.js colors for better light mode readability */
+    [data-theme="light"] .hljs {
+      /* Base text color for code blocks in light mode */
+      color: #333333;
+    }
+
+    [data-theme="light"] .hljs-comment,
+    [data-theme="light"] .hljs-quote {
+      color: #777777;
+      /* Darker grey for comments */
+    }
+
+    [data-theme="light"] .hljs-variable,
+    [data-theme="light"] .hljs-template-variable,
+    [data-theme="light"] .hljs-tag,
+    [data-theme="light"] .hljs-name,
+    [data-theme="light"] .hljs-selector-id,
+    [data-theme="light"] .hljs-selector-class,
+    [data-theme="light"] .hljs-regexp,
+    [data-theme="light"] .hljs-deletion {
+      color: #d94865;
+      /* A reddish pink, dark enough for light bg */
+    }
+
+    [data-theme="light"] .hljs-number,
+    [data-theme="light"] .hljs-built_in,
+    [data-theme="light"] .hljs-builtin-name,
+    [data-theme="light"] .hljs-literal,
+    [data-theme="light"] .hljs-type,
+    [data-theme="light"] .hljs-params,
+    [data-theme="light"] .hljs-meta,
+    [data-theme="light"] .hljs-link {
+      color: #aa573c;
+      /* An orange/brown, dark enough */
+    }
+
+    [data-theme="light"] .hljs-attribute {
+      color: #7e8697;
+      /* A muted blue/grey, dark enough */
+    }
+
+    [data-theme="light"] .hljs-string,
+    [data-theme="light"] .hljs-symbol,
+    [data-theme="light"] .hljs-bullet,
+    [data-theme="light"] .hljs-addition {
+      color: #6aab73;
+      /* A green, dark enough */
+    }
+
+    [data-theme="light"] .hljs-keyword,
+    [data-theme="light"] .hljs-selector-tag,
+    [data-theme="light"] .hljs-section {
+      color: #2973b7;
+      /* A blue, dark enough */
+    }
+
+    [data-theme="light"] .hljs-title,
+    [data-theme="light"] .hljs-class .hljs-title {
+      color: #8f6c9e;
+      /* A purple, dark enough */
+    }
+
+    [data-theme="light"] .hljs-emphasis {
+      font-style: italic;
+    }
+
+    [data-theme="light"] .hljs-strong {
+      font-weight: bold;
+    }
+
+    /* --- End Light Mode Code Block Visibility Fix --- */
     [data-theme="light"] .action-button:hover {
       color: #2c2c2c;
     }
@@ -168,7 +250,6 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
-      padding-bottom: 16px;
       border-bottom: 1px solid var(--border-color);
     }
 
@@ -212,11 +293,6 @@
       border-radius: 32px;
       padding: 8px 16px;
       transition: border-color 0.2s ease, background-color 0.2s ease;
-    }
-
-    .search-input-wrapper:focus-within {
-      background-color: var(--bg-input-hover);
-      border-color: var(--icon-hover-color);
     }
 
     .search-icon {
@@ -381,8 +457,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 28px;
-      padding-bottom: 16px;
+      margin-bottom: 8px;
+      padding-bottom: 8px;
       border-bottom: 1px solid var(--border-color);
       user-select: none;
     }
@@ -437,11 +513,6 @@
       cursor: pointer;
       transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease-out;
       border: 1px solid transparent;
-    }
-
-    .theme-toggle:hover {
-      background-color: var(--bg-input-hover);
-      border-color: var(--border-color);
     }
 
     .theme-toggle:active {
@@ -1052,7 +1123,6 @@
       width: 100%;
       background-color: var(--bg-main);
       padding: 10px 20px;
-      box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
     }
 
     .input-area {
@@ -1069,10 +1139,6 @@
       flex-wrap: wrap;
     }
 
-    .input-area:focus-within {
-      background-color: var(--bg-input-hover);
-    }
-
     .input-area .icon-button,
     .input-icons .icon-button {
       border-radius: 50%;
@@ -1080,6 +1146,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      color: #353535;
     }
 
     .input-area .icon-button {
@@ -1092,6 +1159,17 @@
       transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease-out;
     }
 
+    [data-theme="light"] .action-button::after {
+      background-color: #f0f0f0 !important;
+      color: #333333 !important;
+      border: 1px solid #cccccc !important;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    [data-theme="light"] #moreOptionsDropdown .dropdown-placeholder {
+      color: var(--text-secondary);
+    }
+
     .input-area .icon-button:hover {
       background-color: var(--bg-button-secondary-hover);
       color: var(--icon-hover-color);
@@ -1102,6 +1180,16 @@
       display: flex;
       flex-direction: column;
       align-self: stretch;
+    }
+
+    [data-theme="light"] #moreOptionsDropdown {
+      background-color: var(--bg-input) !important;
+      border-color: var(--border-color) !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    [data-theme="light"] #moreOptionsDropdown .dropdown-placeholder {
+      color: var(--text-placeholder) !important;
     }
 
     .main-input {
@@ -1330,7 +1418,8 @@
 
     .tooltip {
       position: absolute;
-      background-color: #181818;
+      background-color: rgba(24, 24, 24, 0.85);
+      /* Dark background with opacity */
       color: #f0f0f0;
       padding: 6px 10px;
       border-radius: 12px;
@@ -1342,10 +1431,16 @@
       opacity: 0;
       visibility: hidden;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-      border: 1px solid #1e1e1e;
-      transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s;
+      border: 1px solid rgba(40, 40, 40, 0.7);
+      /* Dark border with opacity */
+      transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s, backdrop-filter 0.15s ease;
+      /* Added backdrop-filter transition */
       transform-origin: center;
       user-select: none;
+      backdrop-filter: blur(4px);
+      /* Added blur effect */
+      -webkit-backdrop-filter: blur(4px);
+      /* For Safari */
     }
 
     .tooltip.position-below {
@@ -1377,10 +1472,16 @@
     }
 
     [data-theme="light"] .tooltip {
-      background-color: #f0f0f0;
+      background-color: rgba(240, 240, 240, 0.85);
+      /* Light background with opacity */
       color: #333333;
-      border-color: #cccccc;
+      border-color: rgba(204, 204, 204, 0.7);
+      /* Light border with opacity */
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(4px);
+      /* Added blur effect */
+      -webkit-backdrop-filter: blur(4px);
+      /* For Safari */
     }
 
     .library-container {
@@ -1885,8 +1986,6 @@
     }
 
     .input-area.voice-active .main-input {
-      background-color: var(--bg-input-hover);
-
       opacity: 0.7;
       cursor: not-allowed;
     }
@@ -2041,6 +2140,38 @@
       opacity: 1;
     }
 
+    [data-theme="light"] #webSearchButton.active,
+    [data-theme="light"] #reasonButton.active,
+    [data-theme="light"] #privacyFilterButton.active {
+      background-color: #2a5aad !important;
+      border-color: #4a90e2 !important;
+      color: #ffffff !important;
+    }
+
+    [data-theme="light"] #webSearchButton,
+    [data-theme="light"] #reasonButton,
+    [data-theme="light"] #privacyFilterButton {
+      border: 1px solid transparent !important;
+      background-color: var(--bg-button-secondary) !important;
+      color: var(--icon-color) !important;
+    }
+
+    [data-theme="light"] #webSearchButton:not(.active):hover,
+    [data-theme="light"] #reasonButton:not(.active):hover,
+    [data-theme="light"] #privacyFilterButton:not(.active):hover {
+      background-color: var(--bg-button-secondary-hover) !important;
+      color: var(--icon-hover-color) !important;
+      border-color: transparent !important;
+    }
+
+    [data-theme="light"] #webSearchButton.active:hover,
+    [data-theme="light"] #reasonButton.active:hover,
+    [data-theme="light"] #privacyFilterButton.active:hover {
+      background-color: #22488a !important;
+      border-color: #3276c6 !important;
+      color: #ffffff !important;
+    }
+
     .close-sidebar-large {
       color: var(--icon-color);
       font-size: 1.2em;
@@ -2102,21 +2233,21 @@
     }
 
     .main-input.privacy-blur {
-      filter: blur(6px);
+      filter: blur(4px);
       transition: filter 0.3s ease-in-out;
       user-select: none;
 
     }
 
     .message.user-message.privacy-blur .markdown-content {
-      filter: blur(6px);
+      filter: blur(4px);
       transition: filter 0.3s ease-in-out;
       user-select: none;
     }
 
     .message.user-message.privacy-blur img {
       transition: filter 0.3s ease-in-out;
-      filter: blur(3px);
+      filter: blur(12px);
       user-select: none;
       pointer-events: none;
     }
@@ -2257,7 +2388,6 @@
 
       }
 
-
       .agents-header {
         display: block;
         text-align: center;
@@ -2296,6 +2426,573 @@
         transform: translateY(100%);
         opacity: 0;
       }
+    }
+
+    .drop-zone-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.75);
+      z-index: 3000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
+      backdrop-filter: blur(4px);
+    }
+
+    .drop-zone-overlay.drag-over-active {
+      display: flex;
+      opacity: 1;
+      pointer-events: none;
+    }
+
+    .drop-zone-content {
+      text-align: center;
+      color: var(--text-primary);
+      user-select: none;
+    }
+
+    .drop-zone-icon {
+      position: relative;
+      width: 100px;
+      height: 80px;
+      margin: 0 auto 20px auto;
+      font-size: 3em;
+    }
+
+    .drop-zone-icon i {
+      position: absolute;
+      border-radius: 8px;
+      padding: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .drop-zone-icon .fa-file-image {
+      background-color: #4a00e0;
+      color: #fff;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1.1);
+      z-index: 3;
+    }
+
+    .drop-zone-icon .icon-bg-1 {
+      background-color: #8e2de2;
+      color: #eee;
+      top: 15%;
+      left: 20%;
+      transform: rotate(-15deg) scale(0.9);
+      z-index: 2;
+    }
+
+    .drop-zone-icon .icon-bg-2 {
+      background-color: #8e2de2;
+      color: #eee;
+      top: 25%;
+      right: 15%;
+      transform: rotate(10deg) scale(0.95);
+      z-index: 1;
+    }
+
+    .drop-zone-content h2 {
+      font-size: 1.8em;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .drop-zone-content p {
+      font-size: 1em;
+      color: var(--text-secondary);
+    }
+
+
+    .settings-modal.visible~#dropZoneOverlay,
+    .search-overlay.visible~#dropZoneOverlay,
+    .image-overlay.visible~#dropZoneOverlay,
+    .agents-overlay.visible~#dropZoneOverlay {
+      display: none !important;
+      opacity: 0 !important;
+    }
+
+
+    .todo-content {
+      max-width: 650px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .todo-header i {
+      vertical-align: middle;
+    }
+
+    .todo-body {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding-right: 5px;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .todo-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .todo-form input[type="text"],
+    .todo-form textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-input);
+      color: var(--text-primary);
+      font-size: 1em;
+      font-family: inherit;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .todo-form textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .todo-add-btn {
+      padding: 10px 18px !important;
+      border-radius: 14px !important;
+      font-weight: 500 !important;
+      font-size: 0.95em !important;
+      cursor: pointer !important;
+      transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease !important;
+      align-self: flex-end !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      border: none !important;
+      /* Ensure no border */
+
+      /* Dark Mode Default Styles */
+      background-color: var(--send-button-bg) !important;
+      /* Should be white in dark mode */
+      color: #000000 !important;
+      /* Black text for dark mode */
+    }
+
+    .todo-add-btn:hover {
+      /* Dark Mode Hover */
+      background-color: var(--send-button-hover-bg) !important;
+      /* Should be grey in dark mode */
+      color: #000000 !important;
+      /* Keep text black */
+    }
+
+    .todo-add-btn:active {
+      /* Dark Mode Active */
+      transform: scale(0.97) !important;
+      background-color: var(--send-button-active-bg) !important;
+      /* Darker grey */
+      color: #000000 !important;
+      /* Keep text black */
+    }
+
+    [data-theme="light"] .todo-add-btn {
+      /* Light Mode Default Styles */
+      background-color: var(--send-button-bg) !important;
+      /* Should be black in light mode */
+      color: #ffffff !important;
+      /* White text for light mode */
+    }
+
+    [data-theme="light"] .todo-add-btn:hover {
+      /* Light Mode Hover */
+      background-color: var(--send-button-hover-bg) !important;
+      /* Should be dark grey in light mode */
+      color: #ffffff !important;
+      /* Keep text white */
+    }
+
+    [data-theme="light"] .todo-add-btn:active {
+      /* Light Mode Active */
+      transform: scale(0.97) !important;
+      background-color: var(--send-button-active-bg) !important;
+      /* Slightly lighter dark grey */
+      color: #ffffff !important;
+      /* Keep text white */
+    }
+
+    .todo-list-container {
+      flex-grow: 1;
+      min-height: 150px;
+    }
+
+    .todo-list-container h3 {
+      color: var(--text-primary);
+      margin-bottom: 15px;
+      font-size: 1.1em;
+      font-weight: 500;
+    }
+
+    #todoList {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .todo-item {
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
+      transition: background-color 0.2s ease, opacity 0.3s ease;
+      opacity: 1;
+      overflow: hidden;
+    }
+
+    .todo-item.completed {
+      opacity: 0.6;
+    }
+
+    .todo-item.completed .todo-item-content h4,
+    .todo-item.completed .todo-item-content p {
+      text-decoration: line-through;
+      color: var(--text-secondary);
+    }
+
+    .todo-item-content {
+      flex-grow: 1;
+      word-break: break-word;
+    }
+
+    .todo-item-content h4 {
+      margin: 0 0 6px 0;
+      font-size: 1.05em;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .todo-item-content p {
+      margin: 0 0 10px 0;
+      font-size: 0.9em;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .todo-item-date {
+      font-size: 0.8em;
+      color: var(--text-placeholder);
+      margin-top: 5px;
+    }
+
+    .todo-item-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+      align-items: center;
+    }
+
+    .todo-action-btn {
+      background-color: var(--bg-button-secondary);
+      color: var(--icon-color);
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 0.9em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+      padding: 0;
+    }
+
+    .todo-action-btn:hover {
+      background-color: var(--bg-button-secondary-hover);
+      color: var(--icon-hover-color);
+    }
+
+    .todo-action-btn.complete-btn:hover {
+      background-color: rgba(40, 167, 69, 0.3);
+      color: #28a745;
+    }
+
+    .todo-action-btn.delete-btn:hover {
+      background-color: rgba(220, 53, 69, 0.3);
+      color: #dc3545;
+    }
+
+    .todo-action-btn:active {
+      transform: scale(0.95);
+    }
+
+
+    .todo-body::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .todo-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .todo-body::-webkit-scrollbar-thumb {
+      background-color: #555;
+      border-radius: 10px;
+    }
+
+    .todo-body::-webkit-scrollbar-thumb:hover {
+      background-color: #777;
+    }
+
+    .todo-body {
+      scrollbar-width: thin;
+      scrollbar-color: #555 transparent;
+    }
+
+    [data-theme="light"] .todo-body::-webkit-scrollbar-thumb {
+      background-color: #cccccc;
+    }
+
+    [data-theme="light"] .todo-body::-webkit-scrollbar-thumb:hover {
+      background-color: #a0a0a0;
+    }
+
+    [data-theme="light"] .todo-body {
+      scrollbar-color: #cccccc transparent;
+    }
+
+    /* --- Gemini Model Settings Modal Styles --- */
+    .model-settings-content {
+      max-width: 520px;
+      /* Slightly wider for model names */
+    }
+
+    .model-settings-body {
+      padding-top: 10px;
+    }
+
+    .model-settings-info {
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      line-height: 1.5;
+      text-align: center;
+      padding: 0 10px;
+    }
+
+    .model-options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 40vh;
+      /* Limit height and make scrollable */
+      overflow-y: auto;
+      padding: 5px;
+      /* Add some padding for scrollbar */
+      margin-bottom: 25px;
+      /* Custom scrollbar for model list */
+      scrollbar-width: thin;
+      scrollbar-color: #555 var(--bg-input);
+    }
+
+    .model-options-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .model-options-list::-webkit-scrollbar-track {
+      background: var(--bg-input);
+      border-radius: 10px;
+    }
+
+    .model-options-list::-webkit-scrollbar-thumb {
+      background-color: #555;
+      border-radius: 10px;
+    }
+
+    [data-theme="light"] .model-options-list {
+      scrollbar-color: #ccc var(--bg-input);
+    }
+
+    [data-theme="light"] .model-options-list::-webkit-scrollbar-thumb {
+      background-color: #ccc;
+    }
+
+
+    .model-select-option {
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 12px 18px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease-out;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      /* For checkmark */
+    }
+
+    .model-select-option:hover {
+      background-color: var(--bg-button-secondary-hover);
+      border-color: #555;
+      transform: translateY(-1px);
+    }
+
+    [data-theme="light"] .model-select-option:hover {
+      border-color: #aaa;
+    }
+
+
+    .model-select-option span {
+      font-weight: 500;
+      color: var(--text-primary);
+      font-size: 0.95em;
+    }
+
+    .model-select-option i.fa-check {
+      color: #4CAF50;
+      /* Green checkmark */
+      font-size: 1.1em;
+      opacity: 0;
+      /* Hidden by default */
+      transition: opacity 0.2s ease;
+    }
+
+    .model-select-option.selected {
+      border-color: #4CAF50;
+      /* Highlight selected */
+      background-color: rgba(76, 175, 80, 0.1);
+      /* Slight green background */
+    }
+
+    .model-select-option.selected i.fa-check {
+      opacity: 1;
+      /* Show checkmark when selected */
+    }
+
+    [data-theme="light"] .model-select-option.selected {
+      background-color: rgba(76, 175, 80, 0.15);
+    }
+
+    .revert-default-btn {
+      display: block;
+      /* Make it block to center easily */
+      margin: 15px auto 0 auto;
+      /* Center the button */
+      padding: 18px 24px;
+      background-color: var(--bg-button-secondary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      font-weight: 500;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+      user-select: none;
+    }
+
+    .revert-default-btn:hover {
+      background-color: var(--bg-button-secondary-hover);
+      color: var(--text-primary);
+    }
+
+    .revert-default-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* --- Drag and Drop Text Input Styles --- */
+    .input-area.drag-over {
+      border-color: #4a90e2;
+      /* Highlight border color */
+      background-color: rgba(74, 144, 226, 0.1);
+      /* Subtle background highlight */
+      box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+      /* Add a glow */
+    }
+
+    [data-theme="light"] .input-area.drag-over {
+      border-color: #1976d2;
+      background-color: rgba(25, 118, 210, 0.1);
+      box-shadow: 0 0 15px rgba(25, 118, 210, 0.3);
+    }
+
+    /* --- End Drag and Drop Text Input Styles --- */
+
+    /* --- Gemini Model Settings Modal Styles --- */
+    /* --- Create Task Modal Styling --- */
+    #createTaskModal .settings-content {
+      max-width: 400px;
+      width: 90%;
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    #createTaskModal .settings-header {
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 15px;
+    }
+
+    #createTaskModal .create-task-form input[type="text"],
+    #createTaskModal .create-task-form textarea {
+      width: 100%;
+      padding: 18px 16px;
+      border-radius: 16px;
+      border: none;
+      background-color: var(--bg-input);
+      color: var(--text-primary);
+      font-size: 1em;
+      margin-bottom: 12px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #createTaskModal .create-task-form input[type="text"]:focus,
+    #createTaskModal .create-task-form textarea:focus {
+      outline: none;
+      border-color: var(--icon-hover-color);
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    #createTaskModal .create-task-form button {
+      margin-top: 10px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background-color: var(--send-button-bg);
+      color: var(--text-primary);
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    [data-theme="light"] #createTaskModal .create-task-form button {
+      background-color: var(--send-button-bg);
+      color: #ffffff;
+    }
+
+    #createTaskModal .create-task-form button:hover {
+      background-color: var(--send-button-hover-bg);
+    }
+
+    #createTaskModal .create-task-form button:active {
+      transform: scale(0.97);
     }
   </style>
 
@@ -2472,7 +3169,17 @@
           <div class="search-results" id="searchResults"></div>
         </div>
       </div>
-
+      <div id="dropZoneOverlay" class="drop-zone-overlay">
+        <div class="drop-zone-content">
+          <div class="drop-zone-icon">
+            <i class="fas fa-file-image"></i>
+            <i class="fas fa-file-code icon-bg-1"></i>
+            <i class="fas fa-file-alt icon-bg-2"></i>
+          </div>
+          <h2>Add anything</h2>
+          <p>Drop any file here to add it to the conversation</p>
+        </div>
+      </div>
       <div class="input-container">
         <div class="input-area">
           <div class="text-input-wrapper">
@@ -2499,6 +3206,74 @@
                 data-tooltip-position="above" data-tooltip-delay="slow">
                 <i class="fas fa-fingerprint"></i>
               </button>
+              <button class="icon-button" id="todoButton" data-tooltip="Tasks" data-tooltip-position="above"
+                data-tooltip-delay="slow">
+                <i class="fas fa-check-to-slot"></i>
+              </button>
+              <!-- ADD THIS BUTTON -->
+              <button class="icon-button" id="modelSettingsButton" data-tooltip="Model Selector"
+                data-tooltip-position="above" data-tooltip-delay="slow">
+                <i class="fas fa-sliders"></i>
+              </button>
+              <!-- END ADD THIS BUTTON -->
+              <!-- ADD THIS ENTIRE MODAL STRUCTURE -->
+              <div class="settings-modal" id="modelSettingsModal">
+                <div class="settings-content model-settings-content">
+                  <!-- Added a specific class for potential styling -->
+                  <div class="settings-header">
+                    <h2><i class="fas fa-sliders-h" style="margin-right: 10px;"></i>Switch Models</h2>
+                    <button class="settings-close model-settings-close">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                  <div class="model-settings-body">
+                    <p class="model-settings-info">Choose which AI model powers your responses. Your selection remains
+                      active until you switch back to the standard option.</p>
+                    <div class="model-options-list">
+                      <!-- Model options will be populated by JavaScript -->
+                    </div>
+                    <button class="revert-default-btn" id="revertModelButton">
+                      <i class="fas fa-undo" style="margin-right: 8px;"></i> Revert to Default Model
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- END ADD THIS MODAL STRUCTURE -->
+              <div id="createTaskModal" class="settings-modal create-task-modal" style="z-index: 2100;">
+                <div class="settings-content">
+                  <div class="settings-header">
+                    <h2>Create Task</h2>
+                    <button class="settings-close" id="createTaskClose"><i class="fas fa-times"></i></button>
+                  </div>
+                  <form id="createTaskForm" class="create-task-form">
+                    <input type="text" id="createTaskTitle" placeholder="Task Title" required autocomplete="off">
+                    <textarea id="createTaskDescription" placeholder="Description (optional)"
+                      autocomplete="off"></textarea>
+                    <button type="submit" class="todo-add-btn"><i class="fas fa-plus"></i> Add Task</button>
+                  </form>
+                </div>
+              </div>
+              <div id="todoModal" class="settings-modal">
+                <div class="settings-content todo-content">
+                  <div class="settings-header todo-header">
+                    <h2><i class="fas fa-tasks" style="margin-right: 10px;"></i>Tasks</h2>
+                    <button class="settings-close todo-close">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                  <div class="todo-body">
+                    <button id="openCreateTaskButton" class="todo-create-btn">Create Task</button>
+                    <div class="todo-list-container">
+                      <h3>My Tasks</h3>
+                      <ul id="todoList">
+                      </ul>
+                      <p id="noTodosMessage"
+                        style="display: none; text-align: center; color: var(--text-secondary); margin-top: 20px;">No
+                        tasks yet!</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div class="more-options-container">
                 <button class="icon-button more-options" data-tooltip="View tools" data-tooltip-position="above"
                   data-tooltip-delay="slow">···</button>
@@ -2557,15 +3332,416 @@
     const DB_VERSION = 1;
     const STORE_NAME = 'generatedImages';
     let db;
-
     const agentsButton = document.getElementById('agents');
     const agentsOverlay = document.getElementById('agentsOverlay');
     const agentsCloseBtn = agentsOverlay.querySelector('.agents-close-btn');
+    const dropZoneOverlay = document.getElementById('dropZoneOverlay');
+    const todoButton = document.getElementById('todoButton');
+    const todoModal = document.getElementById('todoModal');
+    const todoCloseButton = todoModal.querySelector('.todo-close');
+    const addTodoForm = document.getElementById('addTodoForm');
+    const todoTitleInput = document.getElementById('todoTitle');
+    const todoDescriptionInput = document.getElementById('todoDescription');
+    const todoListUl = document.getElementById('todoList');
+    const noTodosMessage = document.getElementById('noTodosMessage');
+    const TODO_STORAGE_KEY = 'chatgpt_todos';
+    const modelSettingsButton = document.getElementById('modelSettingsButton');
+    const modelSettingsModal = document.getElementById('modelSettingsModal');
+    const modelSettingsCloseButton = modelSettingsModal.querySelector('.model-settings-close');
+    const modelOptionsList = modelSettingsModal.querySelector('.model-options-list');
+    const revertModelButton = document.getElementById('revertModelButton');
+    (function () {
+
+      const theme = localStorage.getItem('theme') || 'dark';
+
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+
+    const AVAILABLE_GEMINI_MODELS = [
+  'gemini-2.0-flash-exp-image-generation',
+  'gemini-2.5-pro-preview-03-25',
+  'gemini-2.5-flash-preview',
+  'gemini-2.0-flash-001',
+  'gemini-2.0-flash-lite-001',
+  'gemini-2.0-flash-lite-001',
+  'gemini-1.5-pro-002',
+  'gemini-1.5-flash-002',
+  'gpt-4o (slow)'
+];
+    const GEMINI_MODEL_STORAGE_KEY = 'selectedGeminiModel';
+
+    function renderModelOptions() {
+      modelOptionsList.innerHTML = '';
+      const selectedModel = localStorage.getItem(GEMINI_MODEL_STORAGE_KEY);
+
+      AVAILABLE_GEMINI_MODELS.forEach(modelName => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'model-select-option';
+        optionDiv.dataset.modelName = modelName;
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = modelName === 'gpt-4o (slow)' ? 'gpt-4o (slow)' : modelName;
+        optionDiv.appendChild(nameSpan);
+
+        const checkIcon = document.createElement('i');
+        checkIcon.className = 'fas fa-check';
+        optionDiv.appendChild(checkIcon);
+
+        if (modelName === selectedModel) {
+          optionDiv.classList.add('selected');
+        }
+
+        optionDiv.addEventListener('click', () => {
+          localStorage.setItem(GEMINI_MODEL_STORAGE_KEY, modelName);
+
+          modelOptionsList.querySelectorAll('.model-select-option').forEach(opt => opt.classList.remove('selected'));
+          optionDiv.classList.add('selected');
+
+          closeModelSettingsModal();
+        });
+
+        modelOptionsList.appendChild(optionDiv);
+      });
+    }
+
+    function openModelSettingsModal() {
+      renderModelOptions();
+      modelSettingsModal.style.animation = 'modalFadeIn 0.2s ease';
+      modelSettingsModal.classList.add('visible');
+    }
+
+    function closeModelSettingsModal() {
+      modelSettingsModal.style.animation = 'modalFadeOut 0.2s ease forwards';
+      setTimeout(() => {
+        modelSettingsModal.classList.remove('visible');
+        modelSettingsModal.style.animation = '';
+      }, 200);
+    }
+
+    if (modelSettingsButton) {
+      modelSettingsButton.addEventListener('click', openModelSettingsModal);
+    }
+    if (modelSettingsCloseButton) {
+      modelSettingsCloseButton.addEventListener('click', closeModelSettingsModal);
+    }
+    if (revertModelButton) {
+      revertModelButton.addEventListener('click', () => {
+        localStorage.removeItem(GEMINI_MODEL_STORAGE_KEY);
+
+        modelOptionsList.querySelectorAll('.model-select-option').forEach(opt => opt.classList.remove('selected'));
+
+        revertModelButton.querySelector('i').classList.remove('fa-undo');
+        revertModelButton.querySelector('i').classList.add('fa-check');
+        setTimeout(() => {
+          revertModelButton.querySelector('i').classList.remove('fa-check');
+          revertModelButton.querySelector('i').classList.add('fa-undo');
+          revertModelButton.textContent = ' Revert to Default Model';
+
+          revertModelButton.innerHTML = '<i class="fas fa-undo" style="margin-right: 8px;"></i> Revert to Default Model';
+          closeModelSettingsModal();
+        }, 1200);
+      });
+    }
+
+    modelSettingsModal.addEventListener('click', (e) => {
+      if (e.target === modelSettingsModal) {
+        closeModelSettingsModal();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modelSettingsModal.classList.contains('visible')) {
+        closeModelSettingsModal();
+      }
+    });
+    function getTodos() {
+      const todosJson = localStorage.getItem(TODO_STORAGE_KEY);
+      try {
+        return todosJson ? JSON.parse(todosJson) : [];
+      } catch (e) {
+        console.error("Error parsing todos from localStorage:", e);
+        return [];
+      }
+    }
+
+    function saveTodos(todos) {
+      localStorage.setItem(TODO_STORAGE_KEY, JSON.stringify(todos));
+    }
+
+    function formatTodoDate(isoString, timeZone) {
+      if (!isoString) return 'No date';
+      try {
+        const date = new Date(isoString);
+        if (isNaN(date.getTime())) return 'Invalid date';
+
+        const options = {
+          year: 'numeric', month: 'short', day: 'numeric',
+          hour: 'numeric', minute: '2-digit', hour12: true,
+          timeZoneName: 'short'
+        };
+
+        if (timeZone) {
+          options.timeZone = timeZone;
+        }
+
+        try {
+          return new Intl.DateTimeFormat(undefined, options).format(date);
+        } catch (intlError) {
+          console.warn("Intl formatting failed, using basic format:", intlError);
+          return date.toLocaleString();
+        }
+
+      } catch (e) {
+        console.error("Error formatting date:", e);
+        return 'Error formatting date';
+      }
+    }
+
+    function renderTodos() {
+      const todos = getTodos();
+      todoListUl.innerHTML = '';
+
+      if (todos.length === 0) {
+        noTodosMessage.style.display = 'block';
+      } else {
+        noTodosMessage.style.display = 'none';
+
+        todos.sort((a, b) => {
+          if (a.completed !== b.completed) {
+            return a.completed ? 1 : -1;
+          }
+
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+
+        todos.forEach((todo, index) => {
+          const li = document.createElement('li');
+          li.className = 'todo-item';
+          li.dataset.id = todo.id;
+          if (todo.completed) {
+            li.classList.add('completed');
+          }
+
+          const safeDescription = todo.description ? escapeHtml(todo.description) : '';
+          const safeTitle = escapeHtml(todo.title);
+
+          li.innerHTML = `
+                    <div class="todo-item-content">
+                        <h4>${safeTitle}</h4>
+                        ${safeDescription ? `<p>${safeDescription}</p>` : ''}
+                        <div class="todo-item-date">Added ${formatTodoDate(todo.createdAt, todo.timeZone)}</div>
+                    </div>
+                    <div class="todo-item-actions">
+                        <button class="todo-action-btn complete-btn" data-tooltip="${todo.completed ? 'Mark as Incomplete' : 'Mark as Complete'}">
+                            <i class="fas ${todo.completed ? 'fa-undo' : 'fa-check'}"></i>
+                        </button>
+                        <button class="todo-action-btn delete-btn" data-tooltip="Delete Task">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `;
+
+          li.querySelector('.complete-btn').addEventListener('click', () => toggleTodoComplete(todo.id));
+          li.querySelector('.delete-btn').addEventListener('click', () => deleteTodoItem(todo.id));
+
+          todoListUl.appendChild(li);
+        });
+
+        initTooltips();
+      }
+    }
+
+    function addTodoItem(event) {
+      event.preventDefault();
+      const title = todoTitleInput.value.trim();
+      const description = todoDescriptionInput.value.trim();
+
+      if (!title) return;
+
+      const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const newTodo = {
+        id: `todo-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        title: title,
+        description: description,
+        completed: false,
+        createdAt: new Date().toISOString(),
+        timeZone: userTimeZone
+      };
+
+      const todos = getTodos();
+      todos.push(newTodo);
+      saveTodos(todos);
+      renderTodos();
+
+      addTodoForm.reset();
+      todoTitleInput.focus();
+    }
+
+    function toggleTodoComplete(id) {
+      let todos = getTodos();
+      const todoIndex = todos.findIndex(todo => todo.id === id);
+      if (todoIndex > -1) {
+        todos[todoIndex].completed = !todos[todoIndex].completed;
+        saveTodos(todos);
+        renderTodos();
+      }
+    }
+
+    function deleteTodoItem(id) {
+
+      let todos = getTodos();
+      todos = todos.filter(todo => todo.id !== id);
+      saveTodos(todos);
+      renderTodos();
+    }
+
+    function openTodoModal() {
+      renderTodos();
+      todoModal.style.animation = 'modalFadeIn 0.2s ease';
+      todoModal.classList.add('visible');
+      setTimeout(() => todoTitleInput.focus(), 100);
+    }
+
+    function closeTodoModal() {
+      todoModal.style.animation = 'modalFadeOut 0.2s ease forwards';
+      setTimeout(() => {
+        todoModal.classList.remove('visible');
+        todoModal.style.animation = '';
+      }, 200);
+    }
+
+    if (todoButton) {
+      todoButton.addEventListener('click', openTodoModal);
+    }
+    if (todoCloseButton) {
+      todoCloseButton.addEventListener('click', closeTodoModal);
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && todoModal.classList.contains('visible')) {
+        closeTodoModal();
+      }
+    });
+
+    todoModal.addEventListener('click', (e) => {
+      if (e.target === todoModal) {
+        closeTodoModal();
+      }
+    });
+
+    document.body.addEventListener('dragenter', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const isModalVisible = document.querySelector('.settings-modal.visible, .search-overlay.visible, .image-overlay.visible, .agents-overlay.visible');
+      if (!isModalVisible && e.dataTransfer && e.dataTransfer.types.includes('Files')) {
+        if (dropZoneOverlay) dropZoneOverlay.classList.add('drag-over-active');
+      }
+    });
+
+    document.body.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    document.body.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (e.relatedTarget === null || !document.body.contains(e.relatedTarget)) {
+        if (dropZoneOverlay) dropZoneOverlay.classList.remove('drag-over-active');
+      }
+    });
+
+    document.body.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (dropZoneOverlay) dropZoneOverlay.classList.remove('drag-over-active');
+
+      if (e.dataTransfer && e.dataTransfer.files.length > 0) {
+        const file = e.dataTransfer.files[0];
+
+        if (file) {
+          attachedFile = file;
+          createFilePreview(attachedFile);
+          saveAttachedFile(attachedFile);
+          mainInput.focus();
+        }
+
+        e.dataTransfer.clearData();
+      }
+    });
 
     agentsButton.addEventListener('click', () => {
       agentsOverlay.classList.add('visible');
     });
 
+    function openCreateTaskModal() {
+      const modal = document.getElementById('createTaskModal');
+      modal.style.animation = 'modalFadeIn 0.2s ease';
+      modal.classList.add('visible');
+    }
+
+    function closeCreateTaskModal() {
+      const modal = document.getElementById('createTaskModal');
+      modal.style.animation = 'modalFadeOut 0.2s ease forwards';
+      setTimeout(() => {
+        modal.classList.remove('visible');
+        modal.style.animation = '';
+      }, 200);
+    }
+
+    const openCreateTaskButton = document.getElementById('openCreateTaskButton');
+    if (openCreateTaskButton) {
+      openCreateTaskButton.addEventListener('click', openCreateTaskModal);
+    }
+
+    const createTaskClose = document.getElementById('createTaskClose');
+    if (createTaskClose) {
+      createTaskClose.addEventListener('click', closeCreateTaskModal);
+    }
+
+    const createTaskForm = document.getElementById('createTaskForm');
+    const createTaskTitleInput = document.getElementById('createTaskTitle');
+    const createTaskDescriptionInput = document.getElementById('createTaskDescription');
+
+    function addCreatedTask(event) {
+      event.preventDefault();
+      const title = createTaskTitleInput.value.trim();
+      const description = createTaskDescriptionInput.value.trim();
+      if (!title) return;
+
+      const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const newTodo = {
+        id: `todo-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        title: title,
+        description: description,
+        completed: false,
+        createdAt: new Date().toISOString(),
+        timeZone: userTimeZone
+      };
+
+      const todos = getTodos();
+      todos.push(newTodo);
+      saveTodos(todos);
+      renderTodos();
+
+      createTaskForm.reset();
+      createTaskTitleInput.focus();
+      closeCreateTaskModal();
+    }
+
+    if (createTaskForm) {
+      createTaskForm.addEventListener('submit', addCreatedTask);
+    }
+
+    const createTaskModal = document.getElementById('createTaskModal');
+    if (createTaskModal) {
+      createTaskModal.addEventListener('click', (e) => {
+        if (e.target === createTaskModal) {
+          closeCreateTaskModal();
+        }
+      });
+    }
     function closeAgentsOverlay() {
       const modal = agentsOverlay.querySelector('.agents-modal');
       if (window.innerWidth <= 768) {
@@ -3411,10 +4587,22 @@
                     `;
             }
           }
+
+          const thinkingContainerHtml = thinkingContainer ? thinkingContainer.outerHTML : '';
+
+          const includeThinkingHtml = (thinkingContentRaw && thinkingContentDiv) || (wasReasoningActiveForThisMessage && thinkingContainer);
+
           const customHtml = `
                 <div class="skip-school-message">${renderedMessage}</div>
+                ${includeThinkingHtml ? thinkingContainerHtml : ''} 
                 ${answersHtml}
             `;
+
+          textDiv.innerHTML = customHtml;
+
+          if (includeThinkingHtml && thinkingContainer) {
+            thinkingContainer.style.display = 'none';
+          }
           textDiv.innerHTML = customHtml;
 
           const messagePart = textDiv.querySelector('.skip-school-message');
@@ -3429,7 +4617,7 @@
           messageDiv.classList.remove('skip-school-format');
           const renderedContent = renderMarkdown(text);
           textDiv.innerHTML = renderedContent;
-          addCopyButtons(textDiv); // Add copy buttons immediately during streaming
+          addCopyButtons(textDiv);
 
           if (!wasReasoningActiveForThisMessage && thinkingContainer) {
             thinkingContainer.style.display = 'none';
@@ -3449,6 +4637,7 @@
       scrollChatToBottom();
       return messageDiv;
     }
+
     function addActionButtonsToMessage(messageDiv) {
       if (!messageDiv || messageDiv.querySelector('.ai-message-actions')) {
 
@@ -3556,12 +4745,18 @@
         let streamEnded = false;
 
         try {
-          const response = await fetch('/refresh-message', {
+
+          const selectedModel = localStorage.getItem(GEMINI_MODEL_STORAGE_KEY);
+          let refreshUrl = '/refresh-message';
+          if (selectedModel) {
+            refreshUrl += `?model=${encodeURIComponent(selectedModel)}`;
+          }
+
+          const response = await fetch(refreshUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chatId: currentChatId, aiMessageTimestamp })
           });
-
           if (!response.ok) {
             const errorData = await response.json().catch(() => ({ message: 'no permission :(' }));
             isAiTyping = false; updateSendButtonState();
@@ -3942,15 +5137,25 @@
 
         try {
 
-          let fetchUrl;
+          let baseUrl;
+          let queryParams = [];
+
           if (isReasoningActive && isWebSearchActive) {
-            fetchUrl = '/research';
-          } else if (isReasoningActive) {
-            fetchUrl = '/sigma?reasoning';
-          } else if (isWebSearchActive) {
-            fetchUrl = '/sigma?search';
+            baseUrl = '/research';
           } else {
-            fetchUrl = '/sigma';
+            baseUrl = '/sigma';
+            if (isReasoningActive) queryParams.push('reasoning');
+            if (isWebSearchActive) queryParams.push('search');
+          }
+
+          const selectedModel = localStorage.getItem(GEMINI_MODEL_STORAGE_KEY);
+          if (selectedModel) {
+            queryParams.push(`model=${encodeURIComponent(selectedModel)}`);
+          }
+
+          let fetchUrl = baseUrl;
+          if (queryParams.length > 0) {
+            fetchUrl += `?${queryParams.join('&')}`;
           }
 
           const response = await fetch(fetchUrl, {
@@ -4127,16 +5332,6 @@
 
               if (thinkingContainer && thinkingContentDiv && thinkingContentDiv.textContent.trim() !== '') {
                 thinkingContainer.style.display = 'block';
-
-                if (currentModel.name === 'school' && isReasoningActive) {
-                  thinkingContainer.classList.add('expanded');
-                  const toggleIcon = thinkingContainer.querySelector('.thinking-toggle i');
-                  if (toggleIcon) {
-
-                    toggleIcon.style.transform = 'rotate(180deg)';
-                  }
-                }
-
               }
 
               addActionButtonsToMessage(finalMessageElement);
@@ -5398,7 +6593,6 @@
                 <p>No results found for "${query}"</p>
               </div>
             `;
-
           searchStatus.innerHTML = '';
           searchStatus.style.display = 'none';
         } else {
@@ -5657,6 +6851,64 @@
     }
 
     loadUnsentInput();
+
+    const inputArea = document.querySelector('.input-area');
+
+    if (inputArea && mainInput) {
+      inputArea.addEventListener('dragenter', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (e.dataTransfer && e.dataTransfer.types.includes('text/plain')) {
+          inputArea.classList.add('drag-over');
+        }
+      });
+
+      inputArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (e.dataTransfer && e.dataTransfer.types.includes('text/plain')) {
+
+          if (!inputArea.classList.contains('drag-over')) {
+            inputArea.classList.add('drag-over');
+          }
+        } else {
+
+          inputArea.classList.remove('drag-over');
+        }
+      });
+
+      inputArea.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.relatedTarget === null || !inputArea.contains(e.relatedTarget)) {
+          inputArea.classList.remove('drag-over');
+        }
+      });
+
+      inputArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        inputArea.classList.remove('drag-over');
+
+        if (e.dataTransfer && e.dataTransfer.types.includes('text/plain')) {
+          const droppedText = e.dataTransfer.getData('text/plain');
+          if (droppedText) {
+
+            const currentText = mainInput.value;
+            mainInput.value = currentText + (currentText ? ' ' : '') + droppedText;
+
+            mainInput.dispatchEvent(new Event('input', { bubbles: true }));
+            mainInput.focus();
+
+            setTimeout(() => {
+              mainInput.selectionStart = mainInput.selectionEnd = mainInput.value.length;
+            }, 0);
+          }
+        }
+      });
+    }
     console.log("welcome to smores chatgpt. better than the real OpenAI chatgpt site... ;)");
   </script>
 </body>
