@@ -8,7 +8,7 @@ const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require("@googl
 require('dotenv').config();
 const PUBLIC_MODE = false;
 // true = no convo history (good for public server)
-// false = convo history will be saved to json
+// false = convo history will be saved to json (for private usage)
 const SAVE_INTERVAL_MS = 5000;
 const HISTORY_FILE = path.join(__dirname, "convo_history.json");
 const DEFAULT_PORT = PUBLIC_MODE ? 3000 : 8005;
