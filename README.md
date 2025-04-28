@@ -69,7 +69,7 @@ Don't leak this key. If you do, cry quietly into your pillow.
 ### 5. Start the Server
 
 ```bash
-node server.js
+node s.js
 ```
 Or if your main file is different:
 
