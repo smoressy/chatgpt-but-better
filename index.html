@@ -3079,6 +3079,12 @@
               <span>Light Mode</span>
             </div>
           </div>
+          <div class="settings-section">
+            <a href="https://github.com/smoressy/chatgpt-but-better" target="_blank" class="theme-toggle" id="openSourceLink" style="text-decoration: none;">
+              <i class="fab fa-github"></i>
+              <span>Open Source</span>
+            </a>
+          </div>
         </div>
       </div>
     </aside>
@@ -3350,6 +3356,7 @@
     const modelSettingsCloseButton = modelSettingsModal.querySelector('.model-settings-close');
     const modelOptionsList = modelSettingsModal.querySelector('.model-options-list');
     const revertModelButton = document.getElementById('revertModelButton');
+    const openSourceLink = document.getElementById('openSourceLink');
     (function () {
 
       const theme = localStorage.getItem('theme') || 'dark';
@@ -6423,7 +6430,13 @@
         text.textContent = 'Light Mode';
       }
     });
-
+    if (openSourceLink) {
+    openSourceLink.addEventListener('click', (e) => {
+        // Allow the default link behavior (opening in new tab)
+        // Then close the modal
+        closeSettingsModal();
+    });
+}
     const searchButton = document.getElementById('searchButton');
     const searchOverlay = document.getElementById('searchOverlay');
     const searchClose = document.getElementById('searchClose');
