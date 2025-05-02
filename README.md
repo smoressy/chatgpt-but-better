@@ -4,16 +4,24 @@ Welcome to **ChatGPT... but Better** — a full-stack AI chat experience built w
 
 > ⚠️ **Status: Beta.** Expect UI bugs, unfinished features, and the occasional chaos. Ongoing updates will be posted here when possible.
 
----
-
----
+--- 
 
 ## 📦 TL;DR - Fast Install
-1. Download project as ZIP
-2. Extract it.
-3. npm install
-4. Run s.js (this is the server file)
 
+1. **Download** the project as a ZIP file
+2. **Extract** the contents to a folder
+3. Open a terminal in that folder and run:
+
+   ```bash
+   npm install
+   ```
+4. Start the server with:
+
+   ```bash
+   node s.js
+   ```
+
+That's it. You're up and running.
 
 ---
 
