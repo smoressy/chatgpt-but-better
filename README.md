@@ -89,4 +89,4 @@ You should see `Server is running` — if not, retrace your steps and try again.
 ## 📬 Contact
 
 📧 **Email:** [smorenitez2@proton.me](mailto:smorenitez2@proton.me)
-💻 Project page: [ai.smoresxo.shop](https://smoresxo.shop)
+💻 Project page: [smoresxo.shop](https://smoresxo.shop)
