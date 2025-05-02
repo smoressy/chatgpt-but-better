@@ -44,8 +44,8 @@ To unlock GPT-4 access **without** paying OpenAI:
 
 #### Brave Search API
 
-* Create a free API key here: [https://search.brave.com/settings](https://search.brave.com/settings)
-* Replace the placeholder key in the codebase.
+* Create a free API key here: [https://brave.com/search/api/](https://brave.com/search/api/)
+* Replace the placeholder key in the codebase. (.env file)
 
 #### Gemini (Google AI) API Key
 
