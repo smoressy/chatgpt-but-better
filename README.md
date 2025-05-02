@@ -6,6 +6,17 @@ Welcome to **ChatGPT... but Better** — a full-stack AI chat experience built w
 
 ---
 
+---
+
+## 📦 TL;DR - Fast Install
+1. Download project as ZIP
+2. Extract it.
+3. npm install
+4. Run s.js (this is the server file)
+
+
+---
+
 ## 📦 Features
 
 * ✅ ChatGPT-style conversational UI
